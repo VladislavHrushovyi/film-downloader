@@ -41,7 +41,7 @@ public class DownloaderFilm
             watch.Reset();
             
             Console.Clear();
-            Console.WriteLine($"Download: {Math.Round(weightFilmMb, 2)} Mb");
+            Console.WriteLine($"Downloaded: {Math.Round(weightFilmMb, 2)} Mb");
             Console.WriteLine($"Speed: {Math.Round(currSpeed, 2)} Mb/s");
             Console.WriteLine($"Count of segments: {seg}");
         } 
