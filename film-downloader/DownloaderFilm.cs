@@ -31,7 +31,7 @@ public class DownloaderFilm
             var response = await result.Content.ReadAsByteArrayAsync();
             
             watch.Stop();
-            var responseWeightMb = (double)response.Length / (1024 * 2);
+            var responseWeightMb = (double)response.Length / (1024 * 1024);
             weightFilmMb += responseWeightMb;
             var currSpeed = responseWeightMb / watch.Elapsed.TotalSeconds;
             
