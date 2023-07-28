@@ -19,7 +19,6 @@ public class DownloaderFilm
     {
         int seg = 1;
         double weightFilmMb = 0;
-        double currSpeed = 0;
         Stopwatch watch = new Stopwatch();
         while (true)
         {
@@ -34,7 +33,7 @@ public class DownloaderFilm
             watch.Stop();
             var responseWeightMb = (double)response.Length / (1024 * 2);
             weightFilmMb += responseWeightMb;
-            currSpeed = responseWeightMb / watch.Elapsed.TotalSeconds;
+            var currSpeed = responseWeightMb / watch.Elapsed.TotalSeconds;
             
             _filmWriter.Write(response);
             _filmWriter.Flush();

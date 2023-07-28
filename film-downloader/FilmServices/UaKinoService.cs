@@ -11,7 +11,7 @@ public class UaKinoService : IFilmService
     
     public string BuildPath(int seg)
     {
-        _pathInfos[_pathInfos.Length - 1] = $"segment{seg}.ts";
+        _pathInfos[^1] = $"segment{seg}.ts";
         
         return String.Join("/", _pathInfos);
     }

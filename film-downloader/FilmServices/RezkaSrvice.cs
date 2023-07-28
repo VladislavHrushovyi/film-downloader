@@ -9,7 +9,7 @@ public class RezkaSrvice : IFilmService
     }
     public string BuildPath(int seg)
     {
-        _pathInfos[_pathInfos.Length - 3] = seg.ToString();
+        _pathInfos[^3] = seg.ToString();
 
         return string.Join("-", _pathInfos);
     }
