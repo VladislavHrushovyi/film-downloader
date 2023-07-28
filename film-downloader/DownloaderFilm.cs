@@ -1,4 +1,5 @@
-﻿using film_downloader.FilmServices;
+﻿using System.Diagnostics;
+using film_downloader.FilmServices;
 
 namespace film_downloader;
 
@@ -17,20 +18,34 @@ public class DownloaderFilm
     public async Task Download()
     {
         int seg = 1;
+        double weightFilmMb = 0;
+        double currSpeed = 0;
+        Stopwatch watch = new Stopwatch();
         while (true)
         {
+            watch.Start();
             var result = await _httpClient.GetAsync(_filmService.BuildPath(seg));
             if (!result.IsSuccessStatusCode)
             {
                 break;
             }
             var response = await result.Content.ReadAsByteArrayAsync();
-            Console.WriteLine($"SEGMENT {seg} downloaded");
+            
+            watch.Stop();
+            var responseWeightMb = (double)response.Length / (1024 * 2);
+            weightFilmMb += responseWeightMb;
+            currSpeed = responseWeightMb / watch.Elapsed.TotalSeconds;
+            
             _filmWriter.Write(response);
             _filmWriter.Flush();
-            Console.WriteLine($"SEGMENT {seg} is wrote");
             seg++;
-        }
+            watch.Reset();
+            
+            Console.Clear();
+            Console.WriteLine($"Download: {Math.Round(weightFilmMb, 2)} Mb");
+            Console.WriteLine($"Speed: {Math.Round(currSpeed, 2)} Mb/s");
+            Console.WriteLine($"Count of segments: {seg}");
+        } 
         _filmWriter.Close();
     }
 }
