@@ -13,12 +13,7 @@ string? path = Console.ReadLine();
 
 if (path != null)
 {
-    IFilmService filmService = chooseService switch
-    {
-        1 => new RezkaSrvice(path),
-        2 => new UaKinoService(path),
-        _ => throw new ArgumentException("Invalid choose")
-    };
+    IFilmService filmService = new FilmServiceFactory().GetFilmService(chooseService, path);
 
     var downloader = new DownloaderFilm(filmService);
     await downloader.Download();
