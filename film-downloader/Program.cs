@@ -6,7 +6,7 @@ Console.WriteLine("Choose film service:");
 Console.WriteLine("1. HdRezka.ag");
 Console.WriteLine("2. UaKino.club");
 
-int chooseService = Int32.Parse(Console.ReadLine() ?? string.Empty);
+FilmServiceTypes chooseService = (FilmServiceTypes)Int32.Parse(Console.ReadLine() ?? string.Empty);
 
 Console.WriteLine("Enter path to film:");
 string? path = Console.ReadLine();
