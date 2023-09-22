@@ -6,27 +6,21 @@ public class FilmServiceFactory
 {
     public IFilmService GetFilmService(FilmServiceTypes type, string path)
     {
-        switch (type)
+        return type switch
         {
-            case FilmServiceTypes.HdRezka:
-                return new RezkaSrvice(path);
-            case FilmServiceTypes.UaKinoClub:
-                return new UaKinoService(path);
-            default:
-                throw new TypeAccessException("Invalid service type");
-        }
+            FilmServiceTypes.HdRezka => new RezkaSrvice(path),
+            FilmServiceTypes.UaKinoClub => new UaKinoService(path),
+            _ => throw new TypeAccessException("Invalid service type")
+        };
     }
     
     public IFilmService GetFilmService(int type, string path)
     {
-        switch (type)
+        return type switch
         {
-            case (int)FilmServiceTypes.HdRezka:
-                return new RezkaSrvice(path);
-            case (int)FilmServiceTypes.UaKinoClub:
-                return new UaKinoService(path);
-            default:
-                throw new TypeAccessException("Invalid service type");
-        }
+            (int)FilmServiceTypes.HdRezka => new RezkaSrvice(path),
+            (int)FilmServiceTypes.UaKinoClub => new UaKinoService(path),
+            _ => throw new TypeAccessException("Invalid service type")
+        };
     }
 }
