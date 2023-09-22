@@ -16,7 +16,7 @@ if (path != null)
     IFilmService filmService = new FilmServiceFactory().GetFilmService(chooseService, path);
 
     var downloader = new DownloaderFilm(filmService);
-    await downloader.DownLoadParallel();
+    await downloader.Download();
 }
 else
 {

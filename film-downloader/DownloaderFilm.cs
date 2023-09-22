@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using film_downloader.FilmServices;
+using film_downloader.Utils;
 
 namespace film_downloader;
 
@@ -30,19 +32,16 @@ public class DownloaderFilm
                 break;
             }
             
-            var responseWeightMb = (double)segmentBytes.Length / (1024 * 1024);
+            var responseWeightMb = (double)segmentBytes.Count / (1024 * 1024);
             weightFilmMb += responseWeightMb;
             var currSpeed = responseWeightMb / watch.Elapsed.TotalSeconds;
 
-            _filmWriter.Write(segmentBytes);
+            _filmWriter.Write(segmentBytes.ToArray());
             _filmWriter.Flush();
             seg++;
             watch.Reset();
 
-            Console.Clear();
-            Console.WriteLine($"Downloaded: {Math.Round(weightFilmMb, 2)} Mb");
-            Console.WriteLine($"Speed: {Math.Round(currSpeed, 2)} Mb/s");
-            Console.WriteLine($"Count of segments: {seg}");
+            ShowDownloadingProgress.ShowProgress(weightFilmMb, currSpeed, seg);
         }
 
         _filmWriter.Close();
@@ -54,12 +53,14 @@ public class DownloaderFilm
         int offsetPart = 10;
         var st = new Stopwatch();
         double weightFilmMb = 0;
+        
         while (true)
         {
             st.Start();
             var downloadTasks = Enumerable.Range(0, offsetPart).Select(_ => GetFilmSegmentBytes(startSeg++));
             var resultsFromTasks = await Task.WhenAll(downloadTasks);
             st.Stop();
+            
             var contentsFromTasks = resultsFromTasks.Where(x => x.Any()).SelectMany(x => x).ToArray();
             if (contentsFromTasks.Length == 0)
             {
@@ -73,22 +74,21 @@ public class DownloaderFilm
             _filmWriter.Flush();
             st.Reset();
 
-            Console.Clear();
-            Console.WriteLine($"Downloaded: {Math.Round(weightFilmMb, 2)} Mb");
-            Console.WriteLine($"Speed: {Math.Round(currSpeed, 2)} Mb/s");
-            Console.WriteLine($"Count of segments: {startSeg - 1}");
+            ShowDownloadingProgress.ShowProgress(weightFilmMb, currSpeed, startSeg - 1);
         }
+        
+        _filmWriter.Close();
     }
 
-    private async Task<byte[]> GetFilmSegmentBytes(int seg)
+    private async Task<IReadOnlyCollection<byte>> GetFilmSegmentBytes(int seg)
     {
         var result = await _httpClient.GetAsync(_filmService.BuildPath(seg));
         if (!result.IsSuccessStatusCode)
         {
-            return Array.Empty<byte>();
+            return new ReadOnlyCollection<byte>(Enumerable.Empty<byte>().ToList());
         }
         var response = await result.Content.ReadAsByteArrayAsync();
-
-        return response;
+        
+        return response.AsReadOnly();
     }
 }
